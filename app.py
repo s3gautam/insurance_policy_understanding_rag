@@ -1,32 +1,12 @@
-import os
-from dotenv import load_dotenv
-
-import os
-from dotenv import load_dotenv
-
-print("Working directory =", os.getcwd())
-
-loaded = load_dotenv(".env")
-
-print("dotenv loaded =", loaded)
-print("API key =", os.getenv("GOOGLE_API_KEY"))
 import streamlit as st
 
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-
 from langchain_google_genai import (
     GoogleGenerativeAIEmbeddings,
     ChatGoogleGenerativeAI,
 )
-
 from langchain_community.vectorstores import FAISS
-
-# ------------------------
-# LOAD API KEY
-# ------------------------
-
-
 
 # ------------------------
 # PAGE SETUP
@@ -72,7 +52,7 @@ if uploaded_file:
         chunks = splitter.split_documents(docs)
 
         embeddings = GoogleGenerativeAIEmbeddings(
-            model="models/gemini-embedding-2"
+            model="models/gemini-embedding-001"
         )
 
         vectorstore = FAISS.from_documents(
@@ -116,7 +96,7 @@ if uploaded_file:
                 )
 
             llm = ChatGoogleGenerativeAI(
-                model="gemini-3.5-flash",
+                model="gemini-2.5-flash",
                 temperature=0
             )
 
@@ -125,17 +105,17 @@ You are an expert insurance policy assistant.
 
 The uploaded document is an insurance policy.
 
-Your job is to answer customer questions using ONLY the information present in the policy.
+Answer the customer's question using ONLY information found in the policy.
 
 Rules:
-- Give clear and direct answers.
-- Be customer friendly.
+- Give a clear and direct answer.
+- Be concise and customer-friendly.
 - Explain insurance terms simply.
-- Do not mention chunks, retrieval, context, or internal processing.
+- Do not mention chunks, retrieval, context, embeddings, or internal processing.
 - Do not mention page numbers in the answer.
-- Do not invent information.
-- If the answer is not available in the policy, say:
-  "I could not find this information in the policy."
+- Do not make up information.
+- If the answer is not present in the policy, respond exactly:
+"I could not find this information in the policy."
 
 Policy Content:
 {context}
@@ -151,9 +131,9 @@ Customer Question:
             st.markdown("## Answer")
             st.write(response.content)
 
-            with st.expander("📄 Source Pages"):
-                st.write(
-                    ", ".join(
-                        [f"Page {p}" for p in unique_pages]
-                    )
+            st.markdown("### 📄 Source Pages")
+            st.write(
+                ", ".join(
+                    [f"Page {p}" for p in unique_pages]
                 )
+            )
